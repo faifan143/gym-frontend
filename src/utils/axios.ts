@@ -77,7 +77,7 @@ const createApiClient = ({
 
 const api = createApiClient({
   baseURL: process.env.BASE_URL || "http://localhost:3000",
-  authRedirectPath: "/login",
+  authRedirectPath: "/auth",
 });
 
 export const apiClient = {
