@@ -1,13 +1,178 @@
+import { formatDate } from "@/utils/constants";
+import { motion, AnimatePresence } from "framer-motion";
+import { Calendar, Clock, User, Users, X } from "lucide-react";
+import { useMokkBar } from "../providers/Mokkbar";
+import { useState } from "react";
 import {
   useAllClasses,
   useAttendClass,
   useMyClasses,
 } from "@/hooks/useCustomer";
 import { useQueryClient } from "@tanstack/react-query";
-import { Calendar, Clock, User, Users } from "lucide-react";
-import { useState } from "react";
-import { useMokkBar } from "../providers/Mokkbar";
-import { formatDate } from "@/utils/constants";
+
+const ClassCard = ({ classItem, onSelect }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all"
+    >
+      <div className="p-6">
+        <h3 className="text-xl font-semibold text-blue-600 mb-4">
+          {classItem.name}
+        </h3>
+
+        <div className="space-y-3">
+          <div className="flex items-center text-gray-600">
+            <Users size={20} className="ml-2 text-blue-500" />
+            <span>السعة: {classItem.maxCapacity} متدرب</span>
+          </div>
+
+          <div className="flex items-start text-gray-600">
+            <Calendar size={20} className="ml-2 mt-1 text-blue-500" />
+            <div className="flex flex-wrap gap-2">
+              {classItem.schedule.map((slot, idx) => (
+                <span
+                  key={idx}
+                  className="text-sm bg-blue-50 px-3 py-1 rounded-lg"
+                >
+                  {slot.day} - {slot.time}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t mt-4 pt-4">
+          <span className="text-sm text-gray-500">
+            تاريخ الإنشاء: {formatDate(classItem.createdAt)}
+          </span>
+        </div>
+      </div>
+
+      <div className="px-6 pb-6">
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => onSelect(classItem)}
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2"
+        >
+          عرض التفاصيل والتسجيل
+        </motion.button>
+      </div>
+    </motion.div>
+  );
+};
+
+const ClassDetailsModal = ({
+  selectedClass,
+  onClose,
+  onEnroll,
+  isEnrolling,
+}) => {
+  console.log("selectedClass", selectedClass);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+    >
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-xl max-w-lg w-full overflow-hidden"
+      >
+        <div className="p-6 border-b flex justify-between items-center">
+          <h2 className="text-xl font-bold text-blue-600">
+            {selectedClass.name}
+          </h2>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <X size={20} className="text-gray-500" />
+          </motion.button>
+        </div>
+
+        <div className="p-6 max-h-[70vh] overflow-y-auto">
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                <Calendar className="text-blue-500" size={20} />
+                المواعيد
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {selectedClass.schedule.map((slot, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between bg-gray-50 p-4 rounded-xl"
+                  >
+                    <span className="font-medium">{slot.day}</span>
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Clock size={16} />
+                      <span>{slot.time}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                <Users className="text-blue-500" size={20} />
+                تفاصيل الكورس
+              </h3>
+              <div className="space-y-2">
+                <div className="bg-gray-50 p-4 rounded-xl flex justify-between items-center">
+                  <span className="text-gray-600">السعة القصوى</span>
+                  <span className="font-medium">
+                    {selectedClass.maxCapacity} متدرب
+                  </span>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-xl flex justify-between items-center">
+                  <span className="text-gray-600">رقم المدرب</span>
+                  <span className="font-medium">
+                    {selectedClass.trainer.user.name}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-sm text-gray-500">
+              آخر تحديث: {formatDate(selectedClass.updatedAt)}
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6 border-t flex flex-col sm:flex-row gap-3 justify-end">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={onClose}
+            className="w-full sm:w-auto px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+          >
+            إلغاء
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => onEnroll(selectedClass.id)}
+            disabled={isEnrolling}
+            className="w-full sm:w-auto px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-colors disabled:bg-blue-300"
+          >
+            {isEnrolling ? "جاري التسجيل..." : "تسجيل في الكورس"}
+          </motion.button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 const CustomersClassesTab = () => {
   const { setSnackbarConfig } = useMokkBar();
   const [selectedClass, setSelectedClass] = useState(null);
@@ -74,109 +239,29 @@ const CustomersClassesTab = () => {
   };
 
   return (
-    <div className="p-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredClasses.map((classItem) => (
-          <div
-            key={classItem.id}
-            className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
-          >
-            <div className="p-6">
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">
-                {classItem.name}
-              </h3>
-
-              <div className="flex items-center mb-3 text-gray-600">
-                <Users size={20} className="ml-2" />
-                <span>السعة: {classItem.maxCapacity} متدرب</span>
-              </div>
-
-              <div className="flex items-start mb-4 text-gray-600">
-                <Calendar size={20} className="ml-2 mt-1" />
-                <span>{formatClassSchedule(classItem.schedule)}</span>
-              </div>
-
-              <div className="border-t pt-4 mt-4">
-                <span className="text-sm text-gray-500">
-                  تاريخ الإنشاء: {formatDate(classItem.createdAt)}
-                </span>
-              </div>
-            </div>
-
-            <div className="px-6 pb-6">
-              <button
-                onClick={() => setSelectedClass(classItem)}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors"
-              >
-                عرض التفاصيل والتسجيل
-              </button>
-            </div>
-          </div>
-        ))}
+    <div className="p-4 md:p-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <AnimatePresence>
+          {filteredClasses.map((classItem) => (
+            <ClassCard
+              key={classItem.id}
+              classItem={classItem}
+              onSelect={setSelectedClass}
+            />
+          ))}
+        </AnimatePresence>
       </div>
 
-      {selectedClass && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <h2 className="text-2xl font-semibold text-blue-600 mb-6">
-                {selectedClass.name}
-              </h2>
-
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold mb-3">المواعيد</h3>
-                  <div className="space-y-2">
-                    {selectedClass.schedule.map((slot, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center text-gray-600 bg-gray-50 p-3 rounded-lg"
-                      >
-                        <Calendar size={18} className="ml-2" />
-                        <span className="ml-4">{slot.day}</span>
-                        <Clock size={18} className="ml-2 mr-4" />
-                        <span>{slot.time}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold">تفاصيل الكورس</h3>
-                  <div className="flex items-center text-gray-600">
-                    <Users size={18} className="ml-2" />
-                    <span>السعة القصوى: {selectedClass.maxCapacity} متدرب</span>
-                  </div>
-                  <div className="flex items-center text-gray-600">
-                    <User size={18} className="ml-2" />
-                    <span>رقم المدرب: {selectedClass.trainerId}</span>
-                  </div>
-                </div>
-
-                <div className="text-sm text-gray-500">
-                  آخر تحديث: {formatDate(selectedClass.updatedAt)}
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 mt-8 pt-6 border-t">
-                <button
-                  onClick={() => setSelectedClass(null)}
-                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  إلغاء
-                </button>
-                <button
-                  onClick={() => handleEnroll(selectedClass.id)}
-                  disabled={isEnrolling}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:bg-blue-300"
-                >
-                  {isEnrolling ? "جاري التسجيل..." : "تسجيل في الكورس"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {selectedClass && (
+          <ClassDetailsModal
+            selectedClass={selectedClass}
+            onClose={() => setSelectedClass(null)}
+            onEnroll={handleEnroll}
+            isEnrolling={isEnrolling}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

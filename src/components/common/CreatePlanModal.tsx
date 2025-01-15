@@ -92,7 +92,7 @@ const PlanModal = ({
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="bg-white rounded-lg p-6 w-full max-w-lg relative"
+        className="bg-white rounded-lg p-6 w-full max-w-lg relative max-h-[90%] overflow-hidden overflow-y-auto no-scrollbar"
         onClick={(e) => e.stopPropagation()}
       >
         <button

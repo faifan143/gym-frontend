@@ -5,12 +5,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Dumbbell } from "lucide-react";
 import LoginForm from "@/components/common/LoginForm";
 import Register from "@/components/common/Register";
+import GymBackground from "@/components/common/GymBackground";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12 rtl">
+      <GymBackground />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

@@ -108,16 +108,16 @@ const CreateClassModal = ({
       <motion.div
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
-        className="bg-white rounded-xl w-full max-w-lg p-6"
+        className="bg-white rounded-xl w-full max-w-lg p-6 h-[90%] overflow-y-auto no-scrollbar overflow-hidden"
       >
         <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">إضافة كورس جديد</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-500"
           >
             <X size={24} />
           </button>
-          <h2 className="text-2xl font-bold">إضافة كورس جديد</h2>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">

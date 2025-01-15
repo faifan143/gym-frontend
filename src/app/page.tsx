@@ -1,7 +1,13 @@
-import React from "react";
+"use client";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 
 const Home = () => {
-  return <div>Home</div>;
+  const router = useRouter();
+  useEffect(() => {
+    router.replace("/auth");
+  }, []);
+  return <div></div>;
 };
 
 export default Home;

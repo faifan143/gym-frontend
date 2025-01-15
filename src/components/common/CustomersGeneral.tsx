@@ -6,10 +6,12 @@ import {
   useMySubscription,
 } from "@/hooks/useCustomer";
 import { useQueryClient } from "@tanstack/react-query";
-import { Calendar, CreditCard, Plus } from "lucide-react";
+import { Calendar, Clock, CreditCard, Plus, X } from "lucide-react";
 import React from "react";
 import SubscribeModal from "./SubscribeModal";
 import { useMokkBar } from "../providers/Mokkbar";
+import { motion } from "framer-motion";
+import { PlanDetailsModal } from "./CustomersPlansTab";
 
 const CustomersGeneralTab = () => {
   const { setSnackbarConfig } = useMokkBar();
@@ -62,15 +64,15 @@ const CustomersGeneralTab = () => {
     });
   };
   return (
-    <div className="p-6 space-y-6">
-      {/* Subscription Status */}
-      <div className="bg-white rounded-xl shadow-sm p-6">
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6">
+      {/* Subscription Status Card */}
+      <div className="bg-white rounded-xl shadow-sm p-4 md:p-6">
         {mySubscription && mySubscription.subscription ? (
           <div className="space-y-4">
-            <div className="flex justify-between items-start">
-              <div className="space-y-1">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+              <div className="space-y-2">
                 <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium 
+                  className={`inline-block px-3 py-1 rounded-full text-sm font-medium 
                   ${
                     mySubscription.subscription.level === "BASIC"
                       ? "bg-gray-100 text-gray-600"
@@ -81,12 +83,10 @@ const CustomersGeneralTab = () => {
                 >
                   {mySubscription.subscription.level}
                 </span>
-                {
-                  <p className="text-gray-500">
-                    ينتهي في{" "}
-                    {new Date(mySubscription?.endDate).toLocaleDateString("ar")}
-                  </p>
-                }
+                <p className="text-gray-500 text-sm">
+                  ينتهي في{" "}
+                  {new Date(mySubscription?.endDate).toLocaleDateString("ar")}
+                </p>
               </div>
               <div className="text-xl font-bold">
                 {mySubscription.subscription.cost} ليرة
@@ -94,13 +94,15 @@ const CustomersGeneralTab = () => {
             </div>
 
             {myClasses && myPlans ? (
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                {/* Available Classes */}
-                <div className="bg-blue-50 p-4 rounded-lg">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-blue-50 p-4 rounded-xl"
+                >
                   <div className="text-blue-600 font-medium">
                     الحصص المتبقية
                   </div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-2xl font-bold mt-1">
                     {mySubscription.subscription.level === "PREMIUM"
                       ? "غير محدود"
                       : Math.max(
@@ -112,14 +114,16 @@ const CustomersGeneralTab = () => {
                             : 0
                         )}
                   </div>
-                </div>
+                </motion.div>
 
-                {/* Available Plans */}
-                <div className="bg-green-50 p-4 rounded-lg">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-green-50 p-4 rounded-xl"
+                >
                   <div className="text-green-600 font-medium">
                     الخطط المتبقية
                   </div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-2xl font-bold mt-1">
                     {mySubscription.subscription.level === "PREMIUM"
                       ? "غير محدود"
                       : Math.max(
@@ -131,33 +135,35 @@ const CustomersGeneralTab = () => {
                             : 0
                         )}
                   </div>
-                </div>
+                </motion.div>
               </div>
             ) : (
               <></>
             )}
           </div>
         ) : (
-          <div className="text-center py-8 space-y-4">
+          <div className="text-center py-6 md:py-8 space-y-4">
             <h3 className="text-xl font-bold text-gray-900">
               لا يوجد اشتراك نشط
             </h3>
             <p className="text-gray-500">قم بالاشتراك للوصول إلى الخدمات</p>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setShowSubscribeModal(true)}
-              className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+              className="bg-blue-500 text-white px-6 py-3 rounded-xl hover:bg-blue-600 transition-colors"
             >
               <Plus className="inline-block w-5 h-5 mr-2" />
               اشترك الآن
-            </button>
+            </motion.button>
           </div>
         )}
       </div>
 
       {/* Enrolled Services */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Classes */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        {/* Classes Card */}
+        <div className="bg-white rounded-xl shadow-sm p-4 md:p-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-bold">الحصص المشترك بها</h3>
             <Calendar className="text-blue-500" />
@@ -165,26 +171,28 @@ const CustomersGeneralTab = () => {
           <div className="space-y-3">
             {myClasses && myClasses.length ? (
               myClasses.map((cls) => (
-                <div
+                <motion.div
                   key={cls.id}
-                  className="flex justify-between items-center p-3 bg-gray-50 rounded-lg"
+                  whileHover={{ scale: 1.01 }}
+                  className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-gray-50 rounded-xl gap-2"
                 >
                   <span className="font-medium">{cls.name}</span>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-gray-500 flex items-center gap-2">
+                    <Clock size={16} />
                     {cls.schedule[0].day} - {cls.schedule[0].time}
                   </div>
-                </div>
+                </motion.div>
               ))
             ) : (
-              <p className="text-center text-gray-500 py-4">
+              <div className="text-center text-gray-500 py-8">
                 لا توجد حصص مشترك بها
-              </p>
+              </div>
             )}
           </div>
         </div>
 
         {/* Plans */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="bg-white rounded-xl shadow-sm p-4 md:p-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-bold">الخطط المشترك بها</h3>
             <CreditCard className="text-green-500" />
@@ -192,70 +200,46 @@ const CustomersGeneralTab = () => {
           <div className="space-y-3">
             {myPlans?.length ? (
               myPlans.map((plan) => (
-                <div
+                <motion.div
                   key={plan.id}
+                  whileHover={{ scale: 1.01 }}
                   onClick={() => setSelectedPlan(plan)}
-                  className="flex justify-between items-center p-3 bg-gray-50 rounded-lg cursor-pointer"
+                  className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-gray-50 rounded-xl gap-2 cursor-pointer"
                 >
                   <span className="font-medium">{plan.title}</span>
                   <div className="text-sm text-gray-500">
                     {plan.nutritionist.user.name}
                   </div>
-                </div>
+                </motion.div>
               ))
             ) : (
-              <p className="text-center text-gray-500 py-4">
+              <div className="text-center text-gray-500 py-8">
                 لا توجد خطط مشترك بها
-              </p>
+              </div>
             )}
           </div>
         </div>
+        {selectedPlan && (
+          <PlanDetailsModal
+            isEnrolling={false}
+            onEnroll={() => {}}
+            selectedPlan={selectedPlan}
+            showDetails={true}
+            onClose={() => setSelectedPlan(null)}
+          />
+        )}
+        {showSubscribeModal && (
+          <SubscribeModal
+            subscriptions={(availableSubscriptions as any[]) ?? []}
+            onClose={handleSubscribeModalClose}
+            onSuccess={handleSubscriptionSuccess}
+            onError={handleSubscriptionError}
+            isOpen={showSubscribeModal}
+          />
+        )}
       </div>
-
-      {showSubscribeModal && (
-        <SubscribeModal
-          subscriptions={(availableSubscriptions as any[]) ?? []}
-          onClose={handleSubscribeModalClose}
-          onSuccess={handleSubscriptionSuccess}
-          onError={handleSubscriptionError}
-          isOpen={showSubscribeModal}
-        />
-      )}
-
-      {selectedPlan && (
-        <PlanDetailsModal
-          plan={selectedPlan}
-          isOpen={!!selectedPlan}
-          onClose={() => setSelectedPlan(null)}
-        />
-      )}
     </div>
   );
 };
 
 export default CustomersGeneralTab;
-
-const PlanDetailsModal = ({ plan, isOpen, onClose }) => {
-  if (!isOpen || !plan) return null;
-
-  return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-10 flex justify-center items-center z-50"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white w-full max-w-lg rounded-lg shadow-lg p-6 relative h-[90%] overflow-y-auto overflow-hidden no-scrollbar"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-4 left-4  text-gray-500 hover:text-gray-700"
-        >
-          &times;
-        </button>
-        <h3 className="text-xl font-bold my-4">{plan.title}</h3>
-        <p className="text-gray-700 whitespace-pre-line">{plan.planDetails}</p>
-      </div>
-    </div>
-  );
-};
