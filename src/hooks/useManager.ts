@@ -403,7 +403,7 @@ export const useUpdateName = ({
   onSuccess,
   onError,
 }: {
-  onSuccess: () => void;
+  onSuccess: (data: any) => void;
   onError: (error: any) => void;
 }) => {
   return useMutation({

@@ -226,6 +226,7 @@ const CustomersGeneralTab = () => {
             selectedPlan={selectedPlan}
             showDetails={true}
             onClose={() => setSelectedPlan(null)}
+            isSubscribed={mySubscription.subscription}
           />
         )}
         {showSubscribeModal && (

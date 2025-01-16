@@ -1,4 +1,4 @@
-import { logout } from "@/cache/slices/userSlice";
+import { logout, setSliceName } from "@/cache/slices/userSlice";
 import { AppDispatch, RootState } from "@/cache/store";
 import { useUpdateName, useUpdatePassword } from "@/hooks/useManager";
 import { motion } from "framer-motion";
@@ -6,6 +6,7 @@ import { Edit2, Key, LogOut, User } from "lucide-react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useMokkBar } from "../providers/Mokkbar";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ProfileTab = () => {
   const { setSnackbarConfig } = useMokkBar();
@@ -13,16 +14,18 @@ const ProfileTab = () => {
   const [newPassword, setNewPassword] = useState("");
   const username = useSelector((state: RootState) => state.user.name);
   const [name, setName] = useState(username);
-
+  const queryClient = useQueryClient();
   const dispatch = useDispatch<AppDispatch>();
 
   const { mutateAsync: updateName, isPending: isNameUpdating } = useUpdateName({
-    onSuccess: () => {
+    onSuccess: (userData) => {
       setSnackbarConfig({
         open: true,
         severity: "success",
         message: "تم تحديث الاسم بنجاح",
       });
+      dispatch(setSliceName(userData.name));
+      console.log("user data : ", userData);
     },
     onError: (error) => {
       setSnackbarConfig({
@@ -120,6 +123,7 @@ const ProfileTab = () => {
       severity: "info",
       message: "تم تسجيل الخروج بنجاح",
     });
+    queryClient.resetQueries();
     dispatch(logout());
   };
 

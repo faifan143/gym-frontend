@@ -1,14 +1,14 @@
 import { formatDate } from "@/utils/constants";
 import { motion } from "framer-motion";
 import {
-    Calendar,
-    Clock,
-    CreditCard,
-    Dumbbell,
-    PlusCircle,
-    User,
-    Users,
-    Utensils,
+  Calendar,
+  Clock,
+  CreditCard,
+  Dumbbell,
+  PlusCircle,
+  User,
+  Users,
+  Utensils,
 } from "lucide-react";
 
 const Overview = ({
@@ -109,6 +109,15 @@ const Overview = ({
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
+          onClick={() => setIsSpecialtyModalOpen(true)}
+          className="flex items-center justify-center gap-2 bg-yellow-500 text-white px-4 py-3 rounded-lg hover:bg-yellow-600 transition-colors"
+        >
+          <PlusCircle className="h-5 w-5" />
+          <span>إضافة تخصص</span>
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={() => setIsTrainerModalOpen(true)}
           className="flex items-center justify-center gap-2 bg-blue-500 text-white px-4 py-3 rounded-lg hover:bg-blue-600 transition-colors"
         >
@@ -134,16 +143,6 @@ const Overview = ({
         >
           <PlusCircle className="h-5 w-5" />
           <span>إضافة اشتراك</span>
-        </motion.button>
-
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => setIsSpecialtyModalOpen(true)}
-          className="flex items-center justify-center gap-2 bg-yellow-500 text-white px-4 py-3 rounded-lg hover:bg-yellow-600 transition-colors"
-        >
-          <PlusCircle className="h-5 w-5" />
-          <span>إضافة تخصص</span>
         </motion.button>
       </div>
 

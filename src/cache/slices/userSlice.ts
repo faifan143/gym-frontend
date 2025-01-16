@@ -60,6 +60,9 @@ const userSlice = createSlice({
     setStatus: (state, actions) => {
       state.status = actions.payload;
     },
+    setSliceName: (state, actions) => {
+      state.name = actions.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -84,7 +87,7 @@ const userSlice = createSlice({
   },
 });
 
-export const { logout, setStatus } = userSlice.actions;
+export const { logout, setStatus, setSliceName } = userSlice.actions;
 
 export const selectUser = (state: RootState) => state.user.email;
 export const selectAccessToken = (state: RootState) => state.user.accessToken;

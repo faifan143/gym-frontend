@@ -6,7 +6,11 @@ import CustomersGeneralTab from "@/components/common/CustomersGeneral";
 import CustomersPlansTab from "@/components/common/CustomersPlansTab";
 import GymBackground from "@/components/common/GymBackground";
 import ProfileTab from "@/components/common/ProfileTab";
-import { useMyClasses, useMySubscription } from "@/hooks/useCustomer";
+import {
+  useMyClasses,
+  useMyPlans,
+  useMySubscription,
+} from "@/hooks/useCustomer";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar,
@@ -201,14 +205,15 @@ const CustomerSidebar = ({ activeTab, setActiveTab, tabs, isMobile }) => {
 
 const CustomerDashboard = () => {
   const { data: myClasses } = useMyClasses();
+  const { data: myPlans } = useMyPlans();
   const { data: mySubscription } = useMySubscription();
 
   // Check if the customer has any enrolled classes or plans
   const hasClasses = mySubscription?.subscription
     ? mySubscription?.subscription.level === "BASIC"
-      ? myClasses?.length < 1
+      ? myClasses?.length + myPlans?.length < 1
       : mySubscription?.subscription.level === "VIP"
-      ? myClasses?.length < 2
+      ? myClasses?.length + myPlans?.length < 2
       : 1
     : 1;
 
@@ -226,6 +231,11 @@ const CustomerDashboard = () => {
   const [activeTab, setActiveTab] = useState("general");
   const [isMobile, setIsMobile] = useState(false);
 
+  useEffect(() => {
+    if (hasClasses == 0 && (activeTab == "classes" || activeTab == "plans")) {
+      setActiveTab("general");
+    }
+  }, [activeTab, hasClasses]);
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -248,8 +258,12 @@ const CustomerDashboard = () => {
       <div className={`flex-1 ${isMobile ? "p-0" : "pl-64"}`} dir="rtl">
         <CustomerHeader activeTab={activeTab} isMobile={isMobile} tabs={tabs} />
         {activeTab === "general" && <CustomersGeneralTab />}
-        {activeTab === "classes" && <CustomersClassesTab />}
-        {activeTab === "plans" && <CustomersPlansTab />}
+        {activeTab === "classes" && (
+          <CustomersClassesTab isSubscribed={mySubscription.subscription} />
+        )}
+        {activeTab === "plans" && (
+          <CustomersPlansTab isSubscribed={mySubscription.subscription} />
+        )}
         {activeTab === "profile" && <ProfileTab />}
       </div>
     </div>

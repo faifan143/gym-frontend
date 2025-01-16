@@ -55,6 +55,7 @@ export const PlanDetailsModal = ({
   onEnroll,
   isEnrolling,
   showDetails = false,
+  isSubscribed,
 }) => {
   return (
     <motion.div
@@ -119,7 +120,7 @@ export const PlanDetailsModal = ({
           </div>
         </div>
 
-        {!showDetails && (
+        {!showDetails && isSubscribed && (
           <div className="p-6 border-t flex flex-col sm:flex-row gap-3 justify-end">
             <motion.button
               whileTap={{ scale: 0.95 }}
@@ -159,7 +160,7 @@ export const PlanDetailsModal = ({
   );
 };
 
-const CustomersPlansTab = () => {
+const CustomersPlansTab = ({ isSubscribed }: { isSubscribed: boolean }) => {
   const { setSnackbarConfig } = useMokkBar();
   const [selectedPlan, setSelectedPlan] = useState(null);
   const queryClient = useQueryClient();
@@ -244,6 +245,7 @@ const CustomersPlansTab = () => {
             onClose={() => setSelectedPlan(null)}
             onEnroll={handleEnroll}
             isEnrolling={isEnrolling}
+            isSubscribed={isSubscribed}
           />
         )}
       </AnimatePresence>

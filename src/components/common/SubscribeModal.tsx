@@ -48,6 +48,10 @@ const SubscribeModal = ({
       queryClient.invalidateQueries({
         queryKey: ["customer", "my-subscription"],
       });
+      queryClient.refetchQueries({
+        queryKey: ["customer", "my-subscription"],
+      });
+
       setSnackbarConfig({
         open: true,
         severity: "success",

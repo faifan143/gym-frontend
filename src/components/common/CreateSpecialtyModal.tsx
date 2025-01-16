@@ -26,10 +26,19 @@ const CreateSpecialtyModal = ({
   const createSpecialtyMutation = useCreateSpecialty({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["manager", "specialties"] });
+
       queryClient.invalidateQueries({
         queryKey: ["manager", "trainers-specialties"],
       });
       queryClient.invalidateQueries({
+        queryKey: ["manager", "nutritionists-specialties"],
+      });
+      queryClient.refetchQueries({ queryKey: ["manager", "specialties"] });
+
+      queryClient.refetchQueries({
+        queryKey: ["manager", "trainers-specialties"],
+      });
+      queryClient.refetchQueries({
         queryKey: ["manager", "nutritionists-specialties"],
       });
       setSnackbarConfig({

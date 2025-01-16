@@ -69,9 +69,8 @@ const ClassDetailsModal = ({
   onClose,
   onEnroll,
   isEnrolling,
+  isSubscribed,
 }) => {
-  console.log("selectedClass", selectedClass);
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -150,30 +149,32 @@ const ClassDetailsModal = ({
           </div>
         </div>
 
-        <div className="p-6 border-t flex flex-col sm:flex-row gap-3 justify-end">
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={onClose}
-            className="w-full sm:w-auto px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
-          >
-            إلغاء
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => onEnroll(selectedClass.id)}
-            disabled={isEnrolling}
-            className="w-full sm:w-auto px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-colors disabled:bg-blue-300"
-          >
-            {isEnrolling ? "جاري التسجيل..." : "تسجيل في الكورس"}
-          </motion.button>
-        </div>
+        {isSubscribed && (
+          <div className="p-6 border-t flex flex-col sm:flex-row gap-3 justify-end">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={onClose}
+              className="w-full sm:w-auto px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+            >
+              إلغاء
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => onEnroll(selectedClass.id)}
+              disabled={isEnrolling}
+              className="w-full sm:w-auto px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-colors disabled:bg-blue-300"
+            >
+              {isEnrolling ? "جاري التسجيل..." : "تسجيل في الكورس"}
+            </motion.button>
+          </div>
+        )}
       </motion.div>
     </motion.div>
   );
 };
 
-const CustomersClassesTab = () => {
+const CustomersClassesTab = ({ isSubscribed }: { isSubscribed: boolean }) => {
   const { setSnackbarConfig } = useMokkBar();
   const [selectedClass, setSelectedClass] = useState(null);
   const { data: classesData, isLoading, isError } = useAllClasses();
@@ -255,6 +256,7 @@ const CustomersClassesTab = () => {
             onClose={() => setSelectedClass(null)}
             onEnroll={handleEnroll}
             isEnrolling={isEnrolling}
+            isSubscribed={isSubscribed}
           />
         )}
       </AnimatePresence>
