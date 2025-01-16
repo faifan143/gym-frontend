@@ -70,7 +70,7 @@ const TrainerSidebar = ({ activeTab, setActiveTab, tabs, isMobile }) => {
           </div>
           <div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
-              لوحة التحكم
+              لوحة التحكم المدرب
             </h1>
             <p className="text-sm text-gray-500">مرحباً بك في النظام</p>
           </div>
