@@ -6,12 +6,12 @@ import {
   useMySubscription,
 } from "@/hooks/useCustomer";
 import { useQueryClient } from "@tanstack/react-query";
-import { Calendar, Clock, CreditCard, Plus, X } from "lucide-react";
-import React from "react";
-import SubscribeModal from "./SubscribeModal";
-import { useMokkBar } from "../providers/Mokkbar";
 import { motion } from "framer-motion";
+import { Calendar, Clock, CreditCard, Plus } from "lucide-react";
+import React from "react";
+import { useMokkBar } from "../providers/Mokkbar";
 import { PlanDetailsModal } from "./CustomersPlansTab";
+import SubscribeModal from "./SubscribeModal";
 
 const CustomersGeneralTab = () => {
   const { setSnackbarConfig } = useMokkBar();

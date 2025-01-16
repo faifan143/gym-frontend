@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const CustomerHeader = ({ activeTab, tabs, isMobile }) => {
+const CustomerHeader = ({ activeTab, tabs }) => {
   return (
     <header className="bg-white border-b" dir="rtl">
       <div className="mx-auto">

@@ -1,9 +1,9 @@
 // components/trainer/CreateClassModal.tsx
-import React, { useState } from "react";
-import { X, Plus, Trash2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useSelector } from "react-redux";
 import { RootState } from "@/cache/store";
+import { motion } from "framer-motion";
+import { Plus, Trash2, X } from "lucide-react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 
 const weekDays = [
   "Monday",

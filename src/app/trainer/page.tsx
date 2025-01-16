@@ -9,7 +9,7 @@ import ProfileTab from "@/components/common/ProfileTab";
 import { Menu, X } from "lucide-react";
 import GymBackground from "@/components/common/GymBackground";
 
-const TrainerHeader = ({ activeTab, tabs, isMobile }) => {
+const TrainerHeader = ({ activeTab, tabs }) => {
   return (
     <header className="bg-white border-b">
       <div className="mx-auto">

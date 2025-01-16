@@ -1,14 +1,14 @@
-import { formatDate } from "@/utils/constants";
-import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, Clock, User, Users, X } from "lucide-react";
-import { useMokkBar } from "../providers/Mokkbar";
-import { useState } from "react";
 import {
   useAllClasses,
   useAttendClass,
   useMyClasses,
 } from "@/hooks/useCustomer";
+import { formatDate } from "@/utils/constants";
 import { useQueryClient } from "@tanstack/react-query";
+import { AnimatePresence, motion } from "framer-motion";
+import { Calendar, Clock, Users, X } from "lucide-react";
+import { useState } from "react";
+import { useMokkBar } from "../providers/Mokkbar";
 
 const ClassCard = ({ classItem, onSelect }) => {
   return (
@@ -232,10 +232,6 @@ const CustomersClassesTab = () => {
         },
       }
     );
-  };
-
-  const formatClassSchedule = (schedule: any[]) => {
-    return schedule.map((slot) => `${slot.day} - ${slot.time}`).join(" • ");
   };
 
   return (
