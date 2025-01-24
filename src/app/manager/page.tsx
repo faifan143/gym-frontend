@@ -14,6 +14,7 @@ import SubscriptionsTab from "@/components/common/SubscriptionsTab";
 import TrainersTab from "@/components/common/TrainersTab";
 import { useMokkBar } from "@/components/providers/Mokkbar";
 import {
+  useDetachCustomerExpired,
   useDetachExpired,
   useExpiredSubscriptionsReport,
   useManagerCustomers,
@@ -89,6 +90,34 @@ const ManagerDashboard = () => {
       },
     });
 
+  const {
+    mutateAsync: detachedCustomerExpired,
+    isPending: isCustomerDetaching,
+  } = useDetachCustomerExpired({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["manager", "expired-subscriptions-report"],
+      });
+      queryClient.refetchQueries({
+        queryKey: ["manager", "expired-subscriptions-report"],
+      });
+      setSnackbarConfig({
+        open: true,
+        severity: "success",
+        message: "تم إلغاء الاشتراكات المنتهية بنجاح",
+      });
+    },
+    onError: (error) => {
+      setSnackbarConfig({
+        open: true,
+        severity: "error",
+        message:
+          error?.response?.data?.message ||
+          "حدث خطأ أثناء إلغاء الاشتراكات المنتهية",
+      });
+    },
+  });
+
   const handleDetachExpired = async () => {
     try {
       if (expiredSubscriptions?.count === 0) {
@@ -101,6 +130,13 @@ const ManagerDashboard = () => {
       }
 
       await detachedExpired();
+    } catch (error) {
+      console.error("Error detaching expired subscriptions:", error);
+    }
+  };
+  const handleCustomerDetachExpired = async (customerId: string) => {
+    try {
+      await detachedCustomerExpired(customerId);
     } catch (error) {
       console.error("Error detaching expired subscriptions:", error);
     }
@@ -146,6 +182,8 @@ const ManagerDashboard = () => {
               setIsNeutritionModalOpen={setIsNeutritionModalOpen}
               setIsSubscriptionModalOpen={setIsSubscriptionModalOpen}
               setIsSpecialtyModalOpen={setIsSpecialtyModalOpen}
+              handleDetachCustomer={(id) => handleCustomerDetachExpired(id)}
+              isCustomerDetaching={isCustomerDetaching}
             />
           )}
 

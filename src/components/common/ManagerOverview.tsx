@@ -15,6 +15,8 @@ const Overview = ({
   expiredSubscriptions,
   handleDetachExpired,
   isDetaching,
+  handleDetachCustomer,
+  isCustomerDetaching,
   managerCustomers,
   managerTrainers,
   managerNeutritionists,
@@ -213,6 +215,19 @@ const Overview = ({
                                   </span>
                                 </div>
                               </div>
+                              <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() =>
+                                  handleDetachCustomer(subscription.customerId)
+                                }
+                                disabled={isCustomerDetaching}
+                                className="bg-red-400 hover:bg-red-500 my-5 py-2 px-4 rounded-md text-white transition-colors w-fit disabled:bg-red-300"
+                              >
+                                {isCustomerDetaching
+                                  ? "جاري الإلغاء..."
+                                  : "إلغاء الاشتراك"}
+                              </motion.button>
                             </motion.div>
                           ))}
                         </div>

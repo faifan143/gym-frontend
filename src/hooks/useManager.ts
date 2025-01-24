@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // hooks/useManager.ts
 import { apiClient } from "@/utils/axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -376,6 +377,25 @@ export const useDetachExpired = ({
   return useMutation({
     mutationFn: async () => {
       const response = await apiClient.delete("/manager/expired-subscriptions");
+      return response;
+    },
+    onSuccess,
+    onError,
+  });
+};
+
+export const useDetachCustomerExpired = ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: () => void;
+  onError: (error: any) => void;
+}) => {
+  return useMutation({
+    mutationFn: async (customerId: string) => {
+      const response = await apiClient.delete(
+        `/manager/expired-subscriptions/${customerId}`
+      );
       return response;
     },
     onSuccess,
