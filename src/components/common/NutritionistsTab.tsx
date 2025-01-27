@@ -13,7 +13,11 @@ import { motion } from "framer-motion";
 import { useMokkBar } from "../providers/Mokkbar";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/utils/constants";
 
-const NutritionistsTab = () => {
+interface NutritionistsTabProps {
+  searchQuery: string;
+}
+
+const NutritionistsTab = ({ searchQuery }: NutritionistsTabProps) => {
   const queryClient = useQueryClient();
   const { setSnackbarConfig } = useMokkBar();
 
@@ -132,10 +136,23 @@ const NutritionistsTab = () => {
   const nutritionistSpecialties =
     specialties && specialties.filter((spec) => spec.target === "NUTRITIONIST");
 
+  const filteredNutritionists = nutritionists?.filter((nutritionist) => {
+    if (!searchQuery) return true;
+
+    const query = searchQuery.toLowerCase();
+    const specialty = specialties
+      ?.find((spec) => spec.id === nutritionist.specialtyId)
+      ?.name.toLowerCase();
+
+    return (
+      nutritionist.user.name.toLowerCase().includes(query) ||
+      specialty?.includes(query)
+    );
+  });
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-      {nutritionists &&
-        nutritionists.map((nutritionist) => (
+      {filteredNutritionists &&
+        filteredNutritionists.map((nutritionist) => (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

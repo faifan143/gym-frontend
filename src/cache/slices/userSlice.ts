@@ -7,17 +7,19 @@ import { RootState } from "../store";
 interface UserState {
   accessToken: string | null;
   id: number | null;
+  name: string | null;
   email: string | null;
+  photo: string | null;
   role: "MANAGER" | "TRAINER" | "NUTRITIONIST" | "CUSTOMER" | null;
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
-  name: string | null;
 }
 
 const initialState: UserState = {
   email: null,
   id: null,
   role: null,
+  photo: null,
   accessToken: null,
   status: "idle",
   name: null,
@@ -35,6 +37,9 @@ export const loginUser = createAsyncThunk(
         email,
         password,
       });
+
+      console.log("response : ", response);
+
       return response;
     } catch (error: any) {
       return rejectWithValue(
@@ -63,6 +68,9 @@ const userSlice = createSlice({
     setSliceName: (state, actions) => {
       state.name = actions.payload;
     },
+    setSlicePhoto: (state, action: PayloadAction<string>) => {
+      state.photo = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -77,6 +85,7 @@ const userSlice = createSlice({
         state.role = action.payload.role;
         state.name = action.payload.name;
         state.accessToken = action.payload.accessToken;
+        state.photo = action.payload.photo;
 
         Cookies.set("access_token", action.payload.accessToken);
       })
@@ -87,7 +96,8 @@ const userSlice = createSlice({
   },
 });
 
-export const { logout, setStatus, setSliceName } = userSlice.actions;
+export const { logout, setStatus, setSliceName, setSlicePhoto } =
+  userSlice.actions;
 
 export const selectUser = (state: RootState) => state.user.email;
 export const selectAccessToken = (state: RootState) => state.user.accessToken;

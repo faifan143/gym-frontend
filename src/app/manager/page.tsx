@@ -1,13 +1,14 @@
 "use client";
 
+import { logout } from "@/cache/slices/userSlice";
+import { AppDispatch } from "@/cache/store";
 import CreateNutritionistModal from "@/components/common/CreateNutritionistModal";
 import CreateSpecialtyModal from "@/components/common/CreateSpecialtyModal";
 import CreateSubscriptionModal from "@/components/common/CreateSubscriptionModal";
 import CreateTrainerModal from "@/components/common/CreateTrainerModal";
-import GymBackground from "@/components/common/GymBackground";
-import ManagerHeader from "@/components/common/ManagerHeader";
+import GymBackground2 from "@/components/common/GymBackground2";
+import { ManagerHeader } from "@/components/common/HeaderSearchBox";
 import Overview from "@/components/common/ManagerOverview";
-import ManagerSidebar from "@/components/common/ManagerSidebar";
 import NutritionistsTab from "@/components/common/NutritionistsTab";
 import ProfileTab from "@/components/common/ProfileTab";
 import SubscriptionsTab from "@/components/common/SubscriptionsTab";
@@ -23,21 +24,35 @@ import {
   useManagerTrainers,
 } from "@/hooks/useManager";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  CreditCard,
-  Dumbbell,
-  PersonStandingIcon,
-  TrendingUp,
-  Utensils,
-} from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Activity, CreditCard, Dumbbell, Utensils } from "lucide-react";
 import { useEffect, useState } from "react";
-
-const tabs = [
-  { id: "overview", label: "نظرة عامة", icon: TrendingUp },
-  { id: "trainers", label: "المدربين", icon: Dumbbell },
-  { id: "nutritionists", label: "أخصائيي التغذية", icon: Utensils },
-  { id: "subscriptions", label: "الاشتراكات", icon: CreditCard },
-  { id: "profile", label: "الحساب", icon: PersonStandingIcon },
+import { useDispatch } from "react-redux";
+export const tabs = [
+  {
+    id: "overview",
+    label: "نظرة عامة",
+    icon: Activity,
+    gradient: "from-blue-600 to-indigo-600",
+  },
+  {
+    id: "trainers",
+    label: "المدربين",
+    icon: Dumbbell,
+    gradient: "from-emerald-600 to-teal-600",
+  },
+  {
+    id: "nutritionists",
+    label: "أخصائيي التغذية",
+    icon: Utensils,
+    gradient: "from-orange-600 to-amber-600",
+  },
+  {
+    id: "subscriptions",
+    label: "الاشتراكات",
+    icon: CreditCard,
+    gradient: "from-violet-600 to-purple-600",
+  },
 ];
 
 const ManagerDashboard = () => {
@@ -54,7 +69,9 @@ const ManagerDashboard = () => {
   const { data: managerTrainers } = useManagerTrainers();
   const { data: managerNeutritionists } = useManagerNutritionists();
   const { data: managerSpecialties } = useManagerSpecialties();
+  const [searchQuery, setSearchQuery] = useState("");
 
+  const dispatch = useDispatch<AppDispatch>();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -150,66 +167,147 @@ const ManagerDashboard = () => {
     queryClient.invalidateQueries({ queryKey: ["manager", "specialties"] });
   };
 
+  const handleLogout = () => {
+    setSnackbarConfig({
+      open: true,
+      severity: "info",
+      message: "تم تسجيل الخروج بنجاح",
+    });
+    queryClient.resetQueries();
+    dispatch(logout());
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <ManagerSidebar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        tabs={tabs}
-        isMobile={isMobile}
-      />
-      <GymBackground />
+    <div className="min-h-screen bg-gray-50">
+      {/* Background Pattern */}
+      <GymBackground2 />
 
-      {/* Main Content */}
-      <div
-        className={`flex-1 transition-all duration-300 ${
-          isMobile ? "pr-0" : "pl-64"
-        }`}
-        dir="rtl"
-      >
-        <ManagerHeader activeTab={activeTab} tabs={tabs} />
-        <div className={`${isMobile ? "px-4" : "px-8"}`}>
-          {activeTab === "overview" && (
-            <Overview
-              expiredSubscriptions={expiredSubscriptions}
-              handleDetachExpired={handleDetachExpired}
-              isDetaching={isDetaching}
-              managerCustomers={managerCustomers}
-              managerTrainers={managerTrainers}
-              managerNeutritionists={managerNeutritionists}
-              managerSpecialties={managerSpecialties}
-              setIsTrainerModalOpen={setIsTrainerModalOpen}
-              setIsNeutritionModalOpen={setIsNeutritionModalOpen}
-              setIsSubscriptionModalOpen={setIsSubscriptionModalOpen}
-              setIsSpecialtyModalOpen={setIsSpecialtyModalOpen}
-              handleDetachCustomer={(id) => handleCustomerDetachExpired(id)}
-              isCustomerDetaching={isCustomerDetaching}
-            />
-          )}
+      {/* Content Wrapper */}
+      <div className="relative flex">
+        {/* Sidebar */}
+        <motion.div
+          initial={isMobile ? { x: -280 } : false}
+          animate={isMobile ? { x: 0 } : false}
+          className={`fixed top-0 right-0 h-full w-64 bg-white/80 backdrop-blur-xl border-l border-slate-200 z-50 
+            ${isMobile ? "transform transition-transform duration-300" : ""}`}
+        >
+          <div className="p-6">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500">
+                <Dumbbell className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-xl font-bold text-slate-800">لوحة التحكم</h1>
+            </div>
 
-          {activeTab === "trainers" && <TrainersTab />}
-          {activeTab === "nutritionists" && <NutritionistsTab />}
-          {activeTab === "subscriptions" && <SubscriptionsTab />}
-          {activeTab === "profile" && <ProfileTab />}
+            <nav className="space-y-2">
+              {tabs.map((tab) => (
+                <motion.button
+                  key={tab.id}
+                  whileHover={{ scale: 1.02, x: 4 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all
+                    ${
+                      activeTab === tab.id
+                        ? `bg-gradient-to-r ${tab.gradient} text-white shadow-lg`
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                    }`}
+                >
+                  <tab.icon className="w-5 h-5" />
+                  <span className="font-medium">{tab.label}</span>
+                </motion.button>
+              ))}
+            </nav>
+          </div>
+        </motion.div>
+
+        {/* Main Content */}
+        <div
+          className={`flex-1 transition-all duration-300 ${
+            isMobile ? "pr-0" : "pr-64"
+          }`}
+          dir="rtl"
+        >
+          {/* Header */}
+          <ManagerHeader
+            activeTab={activeTab}
+            tabs={tabs}
+            isMobile={isMobile}
+            onMobileToggle={() => setIsMobile(!isMobile)}
+            setActiveTab={setActiveTab}
+            onLogout={handleLogout}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+          />
+
+          {/* Content Area */}
+          <div className="p-6">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-6"
+              >
+                {activeTab === "overview" && (
+                  <Overview
+                    expiredSubscriptions={expiredSubscriptions}
+                    handleDetachExpired={handleDetachExpired}
+                    isDetaching={isDetaching}
+                    managerCustomers={managerCustomers}
+                    managerTrainers={managerTrainers}
+                    managerNeutritionists={managerNeutritionists}
+                    managerSpecialties={managerSpecialties}
+                    setIsTrainerModalOpen={setIsTrainerModalOpen}
+                    setIsNeutritionModalOpen={setIsNeutritionModalOpen}
+                    setIsSubscriptionModalOpen={setIsSubscriptionModalOpen}
+                    setIsSpecialtyModalOpen={setIsSpecialtyModalOpen}
+                    handleDetachCustomer={handleCustomerDetachExpired}
+                    isCustomerDetaching={isCustomerDetaching}
+                  />
+                )}
+                {activeTab === "trainers" && (
+                  <TrainersTab searchQuery={searchQuery} />
+                )}
+                {activeTab === "nutritionists" && (
+                  <NutritionistsTab searchQuery={searchQuery} />
+                )}
+                {activeTab === "subscriptions" && <SubscriptionsTab />}
+                {activeTab === "profile" && <ProfileTab />}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
       </div>
-
-      <CreateTrainerModal
-        isOpen={isTrainerModalOpen}
-        onClose={() => handleModalClose(setIsTrainerModalOpen)}
-      />
-      <CreateNutritionistModal
-        isOpen={isNeutritionModalOpen}
-        onClose={() => handleModalClose(setIsNeutritionModalOpen)}
-      />
-      <CreateSubscriptionModal
-        isOpen={isSubscriptionModalOpen}
-        onClose={() => handleModalClose(setIsSubscriptionModalOpen)}
-      />
-      <CreateSpecialtyModal
-        isOpen={isSpecialtyModalOpen}
-        onClose={() => handleModalClose(setIsSpecialtyModalOpen)}
-      />
+      {/* Modals */}
+      <AnimatePresence>
+        {isTrainerModalOpen && (
+          <CreateTrainerModal
+            isOpen={isTrainerModalOpen}
+            onClose={() => handleModalClose(setIsTrainerModalOpen)}
+          />
+        )}
+        {isNeutritionModalOpen && (
+          <CreateNutritionistModal
+            isOpen={isNeutritionModalOpen}
+            onClose={() => handleModalClose(setIsNeutritionModalOpen)}
+          />
+        )}
+        {isSubscriptionModalOpen && (
+          <CreateSubscriptionModal
+            isOpen={isSubscriptionModalOpen}
+            onClose={() => handleModalClose(setIsSubscriptionModalOpen)}
+          />
+        )}
+        {isSpecialtyModalOpen && (
+          <CreateSpecialtyModal
+            isOpen={isSpecialtyModalOpen}
+            onClose={() => handleModalClose(setIsSpecialtyModalOpen)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

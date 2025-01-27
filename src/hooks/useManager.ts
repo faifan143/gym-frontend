@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // hooks/useManager.ts
-import { apiClient } from "@/utils/axios";
+import { SubscriptionDuration, SubscriptionLevel } from "@/types/types";
+import { apiClient, formApiClient } from "@/utils/axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { SubscriptionLevel, SubscriptionDuration } from "@/types/types";
 
 // Types based on DTOs
 interface CreateTrainerDto {
@@ -430,6 +430,26 @@ export const useUpdateName = ({
     mutationFn: async (data: { newName: string }) => {
       const response = await apiClient.patch("/auth/update-name", data);
       return response;
+    },
+    onSuccess,
+    onError,
+  });
+};
+
+export const useUpdatePhoto = ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: (data: any) => void;
+  onError: (error: any) => void;
+}) => {
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const response = await formApiClient.patch(
+        "/auth/update-photo",
+        formData
+      );
+      return response.data;
     },
     onSuccess,
     onError,

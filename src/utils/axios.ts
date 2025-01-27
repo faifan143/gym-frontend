@@ -7,21 +7,23 @@ interface ApiClientConfig {
   accessTokenKey?: string;
   refreshTokenKey?: string;
   authRedirectPath?: string;
+  contentType?: string;
   onTokenRefresh?: () => Promise<void>;
 }
 
 const createApiClient = ({
   baseURL,
-  timeout = 10000,
+  timeout = 100000,
   accessTokenKey = "access_token",
   refreshTokenKey = "refresh_token",
   authRedirectPath = "/auth",
   onTokenRefresh,
+  contentType = "application/json",
 }: ApiClientConfig): AxiosInstance => {
   const api = axios.create({
     baseURL,
     timeout,
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": contentType },
     // withCredentials: true,
   });
 
@@ -78,6 +80,11 @@ const createApiClient = ({
 const api = createApiClient({
   baseURL: process.env.BASE_URL || "http://localhost:3000",
   authRedirectPath: "/auth",
+});
+export const formApiClient = createApiClient({
+  baseURL: process.env.BASE_URL || "http://localhost:3000",
+  authRedirectPath: "/auth",
+  contentType: "multipart/form-data",
 });
 
 export const apiClient = {

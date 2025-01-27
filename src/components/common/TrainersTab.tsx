@@ -11,7 +11,10 @@ import { CalendarDays, Edit2, Save, Trash2, Users, X } from "lucide-react";
 import { useState } from "react";
 import { useMokkBar } from "../providers/Mokkbar";
 
-const TrainersTab = () => {
+interface TrainersTabProps {
+  searchQuery: string;
+}
+const TrainersTab = ({ searchQuery }: TrainersTabProps) => {
   const { setSnackbarConfig } = useMokkBar();
   const queryClient = useQueryClient();
   const { data: trainers } = useManagerTrainers();
@@ -165,10 +168,23 @@ const TrainersTab = () => {
     setEditingId(null);
   };
 
+  const filteredTrainers = mergedTrainers?.filter((trainer) => {
+    if (!searchQuery) return true;
+
+    const query = searchQuery.toLowerCase();
+    const specialty = specialties
+      ?.find((spec) => spec.id === trainer.specialtyId)
+      ?.name.toLowerCase();
+
+    return (
+      trainer.user.name.toLowerCase().includes(query) ||
+      specialty?.includes(query)
+    );
+  });
   // Return JSX with updated button handlers and disabled states
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-      {mergedTrainers?.map((trainer) => (
+      {filteredTrainers?.map((trainer) => (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
