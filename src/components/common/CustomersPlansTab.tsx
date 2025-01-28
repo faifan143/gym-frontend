@@ -159,8 +159,15 @@ export const PlanDetailsModal = ({
     </motion.div>
   );
 };
+interface CustomersPlansTabProps {
+  isSubscribed: any;
+  searchQuery: string;
+}
 
-const CustomersPlansTab = ({ isSubscribed }: { isSubscribed: boolean }) => {
+const CustomersPlansTab = ({
+  isSubscribed,
+  searchQuery,
+}: CustomersPlansTabProps) => {
   const { setSnackbarConfig } = useMokkBar();
   const [selectedPlan, setSelectedPlan] = useState(null);
   const queryClient = useQueryClient();
@@ -173,6 +180,17 @@ const CustomersPlansTab = ({ isSubscribed }: { isSubscribed: boolean }) => {
   const filteredPlans = plansData
     ? plansData.filter((planItem) => !myPlansIds.includes(planItem.id))
     : [];
+
+  const allFilteredPlans = filteredPlans?.filter((plan) => {
+    if (!searchQuery) return true;
+
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      plan.title.toLowerCase().includes(searchLower) ||
+      plan.description?.toLowerCase().includes(searchLower) ||
+      plan.nutritionist?.user.name.toLowerCase().includes(searchLower)
+    );
+  });
   const { mutate: enrollPlan, isPending: isEnrolling } = useEnrollPlan({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["customer", "all-plans"] });
@@ -232,7 +250,7 @@ const CustomersPlansTab = ({ isSubscribed }: { isSubscribed: boolean }) => {
     <div className="p-4 md:p-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         <AnimatePresence>
-          {filteredPlans.map((plan) => (
+          {allFilteredPlans.map((plan) => (
             <PlanCard key={plan.id} plan={plan} onSelect={setSelectedPlan} />
           ))}
         </AnimatePresence>

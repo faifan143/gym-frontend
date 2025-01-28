@@ -11,6 +11,7 @@ import { ManagerHeader } from "@/components/common/HeaderSearchBox";
 import Overview from "@/components/common/ManagerOverview";
 import NutritionistsTab from "@/components/common/NutritionistsTab";
 import ProfileTab from "@/components/common/ProfileTab";
+import Sidebar from "@/components/common/Sidebar";
 import SubscriptionsTab from "@/components/common/SubscriptionsTab";
 import TrainersTab from "@/components/common/TrainersTab";
 import { useMokkBar } from "@/components/providers/Mokkbar";
@@ -185,41 +186,12 @@ const ManagerDashboard = () => {
       {/* Content Wrapper */}
       <div className="relative flex">
         {/* Sidebar */}
-        <motion.div
-          initial={isMobile ? { x: -280 } : false}
-          animate={isMobile ? { x: 0 } : false}
-          className={`fixed top-0 right-0 h-full w-64 bg-white/80 backdrop-blur-xl border-l border-slate-200 z-50 
-            ${isMobile ? "transform transition-transform duration-300" : ""}`}
-        >
-          <div className="p-6">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500">
-                <Dumbbell className="w-6 h-6 text-white" />
-              </div>
-              <h1 className="text-xl font-bold text-slate-800">لوحة التحكم</h1>
-            </div>
-
-            <nav className="space-y-2">
-              {tabs.map((tab) => (
-                <motion.button
-                  key={tab.id}
-                  whileHover={{ scale: 1.02, x: 4 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all
-                    ${
-                      activeTab === tab.id
-                        ? `bg-gradient-to-r ${tab.gradient} text-white shadow-lg`
-                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-                    }`}
-                >
-                  <tab.icon className="w-5 h-5" />
-                  <span className="font-medium">{tab.label}</span>
-                </motion.button>
-              ))}
-            </nav>
-          </div>
-        </motion.div>
+        <Sidebar
+          activeTab={activeTab}
+          isMobile={isMobile}
+          setActiveTab={setActiveTab}
+          tabs={tabs}
+        />
 
         {/* Main Content */}
         <div

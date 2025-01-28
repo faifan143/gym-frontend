@@ -136,7 +136,9 @@ export function ManagerHeader({
         </div>
 
         {/* Centered Search Box */}
-        {(activeTab === "trainers" || activeTab === "nutritionists") && (
+        {(activeTab === "trainers" ||
+          activeTab === "nutritionists" ||
+          "classes") && (
           <div className="flex-1 max-w-3xl mx-auto px-4">
             <HeaderSearchBox
               activeTab={activeTab}

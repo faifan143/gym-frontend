@@ -148,8 +148,11 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
     </div>
   );
 };
+interface PlansTabProps {
+  searchQuery: string;
+}
 
-const PlansTab = () => {
+const PlansTab = ({ searchQuery }: PlansTabProps) => {
   const { setSnackbarConfig } = useMokkBar();
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -159,6 +162,17 @@ const PlansTab = () => {
 
   const { data: plans } = useNutritionistPlans();
 
+  const filteredPlans = plans?.filter((plan) => {
+    if (!searchQuery) return true;
+
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      plan.title.toLowerCase().includes(searchLower) ||
+      plan.description?.toLowerCase().includes(searchLower) ||
+      plan.type?.toLowerCase().includes(searchLower)
+      // Add other searchable fields as needed
+    );
+  });
   const createPlanMutation = useCreateNutritionPlan({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["nutritionist", "plans"] });
@@ -358,7 +372,7 @@ const PlansTab = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {plans?.map((plan) => (
+        {filteredPlans?.map((plan) => (
           <PlanCard
             key={plan.id}
             plan={plan}

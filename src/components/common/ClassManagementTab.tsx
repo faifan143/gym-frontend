@@ -453,12 +453,26 @@ const ClassCard = ({ cls, onDelete, onUpdate }) => {
     </motion.div>
   );
 };
+interface ClassesTabProps {
+  searchQuery: string;
+}
 
-const ClassesTab = () => {
+const ClassesTab = ({ searchQuery }: ClassesTabProps) => {
   const queryClient = useQueryClient();
   const { data: classes } = useTrainerClasses();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
+  const filteredClasses = classes?.filter((classItem) => {
+    if (!searchQuery) return true;
+
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      classItem.name.toLowerCase().includes(searchLower) ||
+      classItem.description?.toLowerCase().includes(searchLower) ||
+      classItem.location?.toLowerCase().includes(searchLower) ||
+      classItem.time?.toLowerCase().includes(searchLower)
+    );
+  });
   const createClassMutation = useCreateClass({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trainer", "classes"] });
@@ -516,7 +530,7 @@ const ClassesTab = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <AnimatePresence>
-          {classes?.map((cls) => (
+          {filteredClasses?.map((cls) => (
             <ClassCard
               key={cls.id}
               cls={cls}
