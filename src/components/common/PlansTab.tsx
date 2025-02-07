@@ -12,6 +12,7 @@ import { Calendar, Edit2, Plus, Trash2, Users } from "lucide-react";
 import { useState } from "react";
 import PlanModal from "./CreatePlanModal";
 import { useMokkBar } from "../providers/Mokkbar";
+import * as XLSX from "xlsx";
 
 interface PlanCardProps {
   plan: any;
@@ -98,8 +99,43 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
     onRemoveCustomer(planId, customerId);
   };
 
-  if (!isOpen || !plan) return null;
+  const handleExportToExcel = () => {
+    if (!plan.enrolledCustomers.length) return;
 
+    // Prepare data for export
+    const exportData = plan.enrolledCustomers.map((enrollment) => ({
+      الاسم: enrollment.customer.user.name,
+      "البريد الإلكتروني": enrollment.customer.user.email,
+      "تاريخ التسجيل": new Date(enrollment.enrolledAt).toLocaleDateString("ar"),
+      "تاريخ انتهاء الاشتراك": enrollment.customer.subscriptions[0]?.endDate
+        ? new Date(
+            enrollment.customer.subscriptions[0].endDate
+          ).toLocaleDateString("ar")
+        : "غير متوفر",
+    }));
+
+    // Create worksheet
+    const ws = XLSX.utils.json_to_sheet(exportData, {
+      header: [
+        "الاسم",
+        "البريد الإلكتروني",
+        "تاريخ التسجيل",
+        "تاريخ انتهاء الاشتراك",
+      ],
+    });
+
+    // Set RTL direction for the worksheet
+    ws["!dir"] = "rtl";
+
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, `${plan.title.slice(0, 15)}-العملاء`);
+
+    // Generate Excel file
+    XLSX.writeFile(wb, `${plan.title} - قائمة العملاء.xlsx`);
+  };
+
+  if (!isOpen || !plan) return null;
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
@@ -118,27 +154,65 @@ const PlanDetailsModal: React.FC<PlanDetailsModalProps> = ({
         </button>
         <h3 className="text-xl font-bold mb-4">تفاصيل الخطة: {plan.title}</h3>
         <p className="mb-4 whitespace-pre-line">{plan.planDetails}</p>
-        <h4 className="font-semibold mb-2">العملاء المسجلين:</h4>
+        <div className="flex justify-between items-center mb-4">
+          <h4 className="font-semibold">العملاء المسجلين:</h4>
+          <button
+            onClick={handleExportToExcel}
+            disabled={isLoading || !plan.enrolledCustomers.length}
+            className="flex items-center gap-2 bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 disabled:bg-green-300 transition-colors"
+          >
+            <span>تصدير إلى Excel</span>
+          </button>
+        </div>
         {plan.enrolledCustomers.length > 0 ? (
-          <ul className="space-y-2">
-            {plan.enrolledCustomers.map((enrollment) => (
-              <li
-                key={enrollment.customerId}
-                className="flex justify-between items-center p-2 border rounded-lg"
-              >
-                <span>{enrollment.customer.user.name}</span>
-                <button
-                  onClick={() =>
-                    handleRemoveClick(plan.id, enrollment.customerId)
-                  }
-                  disabled={isLoading}
-                  className="text-red-500 hover:underline disabled:text-red-300 disabled:no-underline"
-                >
-                  إزالة
-                </button>
-              </li>
-            ))}
-          </ul>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="p-3 text-right border-b">الاسم</th>
+                  <th className="p-3 text-right border-b">البريد الإلكتروني</th>
+                  <th className="p-3 text-right border-b">تاريخ التسجيل</th>
+                  <th className="p-3 text-right border-b">
+                    تاريخ انتهاء الاشتراك
+                  </th>
+                  <th className="p-3 text-right border-b">الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody>
+                {plan.enrolledCustomers.map((enrollment) => (
+                  <tr key={enrollment.customerId} className="hover:bg-gray-50">
+                    <td className="p-3 border-b">
+                      {enrollment.customer.user.name}
+                    </td>
+                    <td className="p-3 border-b">
+                      {enrollment.customer.user.email}
+                    </td>
+                    <td className="p-3 border-b">
+                      {new Date(enrollment.enrolledAt).toLocaleDateString("ar")}
+                    </td>
+                    <td className="p-3 border-b">
+                      {enrollment.customer.subscriptions[0]?.endDate
+                        ? new Date(
+                            enrollment.customer.subscriptions[0].endDate
+                          ).toLocaleDateString("ar")
+                        : "غير متوفر"}
+                    </td>
+                    <td className="p-3 border-b">
+                      <button
+                        onClick={() =>
+                          handleRemoveClick(plan.id, enrollment.customerId)
+                        }
+                        disabled={isLoading}
+                        className="text-red-500 hover:underline disabled:text-red-300 disabled:no-underline"
+                      >
+                        إزالة
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <p className="text-gray-500 text-center">
             لا يوجد عملاء مسجلين في هذه الخطة.
@@ -161,6 +235,7 @@ const PlansTab = ({ searchQuery }: PlansTabProps) => {
   const queryClient = useQueryClient();
 
   const { data: plans } = useNutritionistPlans();
+  console.log(plans);
 
   const filteredPlans = plans?.filter((plan) => {
     if (!searchQuery) return true;

@@ -4,7 +4,6 @@ import {
   useCreateClass,
   useDeleteClass,
   useMarkAttendance,
-  useRemoveCustomerFromClass,
   useTrainerClasses,
   useUpdateClass,
 } from "@/hooks/useTrainer";
@@ -18,12 +17,13 @@ import {
   Edit2,
   Plus,
   Trash2,
-  UserMinus,
+  User2,
   Users,
   X,
 } from "lucide-react";
 import { useState } from "react";
 import CreateClassModal from "./CreateClassModal";
+import { EnrolledCustomersModal } from "./EnrolledCustomersModal";
 
 const AttendanceModal = ({ scheduleSlot, classId, onClose }) => {
   const queryClient = useQueryClient();
@@ -141,15 +141,7 @@ const ClassCard = ({ cls, onDelete, onUpdate }) => {
     schedule: cls.schedule,
   });
 
-  const queryClient = useQueryClient();
   const { data: customers } = useClassCustomers(cls.id);
-  const { mutateAsync: onRemoveCustomer } = useRemoveCustomerFromClass({
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["trainer", "class", cls.id, "customers"],
-      });
-    },
-  });
 
   const scheduleLabels = {
     Monday: "الإثنين",
@@ -335,8 +327,12 @@ const ClassCard = ({ cls, onDelete, onUpdate }) => {
 
             <div className="flex items-center justify-between text-sm text-gray-600">
               <div className="flex items-center gap-2">
-                <Users size={16} />
+                <User2 size={16} />
                 <span>{cls.maxCapacity} طالب</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Users size={16} />
+                <span>{cls.maxCapacity - customers?.length} مكان متبقي</span>
               </div>
               <div className="flex items-center gap-2">
                 <Calendar size={16} />
@@ -375,7 +371,7 @@ const ClassCard = ({ cls, onDelete, onUpdate }) => {
           <div className="p-4">
             <motion.button
               whileTap={{ scale: 0.98 }}
-              onClick={() => setShowCustomers(!showCustomers)}
+              onClick={() => setShowCustomers(true)} // Changed from toggle to true
               className="w-full flex items-center justify-between p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-2">
@@ -384,57 +380,16 @@ const ClassCard = ({ cls, onDelete, onUpdate }) => {
                 </span>
                 <Users size={16} className="text-blue-500" />
               </div>
-              <ChevronDown
-                size={20}
-                className={`text-gray-400 transition-transform ${
-                  showCustomers ? "rotate-180" : ""
-                }`}
-              />
+              <ChevronDown size={20} className="text-gray-400" />
             </motion.button>
 
             <AnimatePresence>
-              {showCustomers && customers?.length > 0 && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="overflow-hidden"
-                >
-                  <div className="space-y-2 pt-4">
-                    {customers.map((customer) => (
-                      <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        key={customer.id}
-                        className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50"
-                      >
-                        <div className="flex items-center gap-4">
-                          <span className="font-medium">
-                            {customer.user.name}
-                          </span>
-                          <span className="text-sm text-gray-500">
-                            {new Date(customer.createdAt).toLocaleDateString(
-                              "ar"
-                            )}
-                          </span>
-                        </div>
-                        <motion.button
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() =>
-                            onRemoveCustomer({
-                              classId: cls.id,
-                              customerId: customer.id,
-                            })
-                          }
-                          className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
-                        >
-                          <UserMinus size={16} />
-                        </motion.button>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
+              {showCustomers && (
+                <EnrolledCustomersModal
+                  cls={cls}
+                  customers={customers}
+                  onClose={() => setShowCustomers(false)}
+                />
               )}
             </AnimatePresence>
           </div>

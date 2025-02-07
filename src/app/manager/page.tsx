@@ -6,6 +6,7 @@ import CreateNutritionistModal from "@/components/common/CreateNutritionistModal
 import CreateSpecialtyModal from "@/components/common/CreateSpecialtyModal";
 import CreateSubscriptionModal from "@/components/common/CreateSubscriptionModal";
 import CreateTrainerModal from "@/components/common/CreateTrainerModal";
+import GymBackground from "@/components/common/GymBackground";
 import GymBackground2 from "@/components/common/GymBackground2";
 import { ManagerHeader } from "@/components/common/HeaderSearchBox";
 import Overview from "@/components/common/ManagerOverview";
@@ -181,7 +182,7 @@ const ManagerDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Background Pattern */}
-      <GymBackground2 />
+      <GymBackground />
 
       {/* Content Wrapper */}
       <div className="relative flex">

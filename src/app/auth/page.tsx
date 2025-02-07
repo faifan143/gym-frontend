@@ -1,23 +1,32 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Dumbbell } from "lucide-react";
 import LoginForm from "@/components/common/LoginForm";
 import Register from "@/components/common/Register";
-import GymBackground from "@/components/common/GymBackground";
+import { AnimatePresence, motion } from "framer-motion";
+import { Dumbbell } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12 rtl">
-      <GymBackground />
+      <div className="fixed inset-0 backdrop-blur-sm bg-black/50 z-10"></div>
+      <Image
+        src={"/gym-bg.jpg"}
+        alt="bg"
+        quality="100"
+        sizes="100x100"
+        width={15000}
+        height={15000}
+        className="fixed inset-0 -top-5 z-0 "
+      />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-md w-full"
+        className="max-w-md w-full z-20"
       >
         <div className="bg-white p-8 rounded-2xl shadow-sm">
           <div className="flex flex-col items-center">

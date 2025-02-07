@@ -21,7 +21,11 @@ const PlanCard = ({ plan, onSelect }) => {
 
         <div className="space-y-4">
           <div className="flex items-center text-gray-600">
-            <User size={20} className="ml-2 text-blue-500" />
+            <img
+              src={plan.nutritionist?.user.photo}
+              alt=""
+              className="text-blue-500 h-10 w-10 ml-4 rounded-full"
+            />
             <span className="text-sm">
               أخصائي التغذية: {plan.nutritionist?.user?.name || "غير محدد"}
             </span>
@@ -90,7 +94,11 @@ export const PlanDetailsModal = ({
             <div className="space-y-4">
               <div className="bg-gray-50 p-4 rounded-xl space-y-2">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <User className="text-blue-500" size={20} />
+                  <img
+                    src={selectedPlan.nutritionist?.user.photo}
+                    alt=""
+                    className="text-blue-500 h-10 w-10 rounded-full"
+                  />
                   معلومات أخصائي التغذية
                 </h3>
                 <div className="text-gray-600">

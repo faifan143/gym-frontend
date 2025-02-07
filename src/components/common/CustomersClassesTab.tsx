@@ -134,11 +134,24 @@ const ClassDetailsModal = ({
                     {selectedClass.maxCapacity} متدرب
                   </span>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-xl flex justify-between items-center">
-                  <span className="text-gray-600">رقم المدرب</span>
-                  <span className="font-medium">
-                    {selectedClass.trainer.user.name}
-                  </span>
+                <div className="bg-gray-50 p-4 rounded-xl ">
+                  <div className="flex justify-start items-center gap-4">
+                    <img
+                      src={selectedClass.trainer.user.photo}
+                      alt=""
+                      className="rounded-full h-12 w-12"
+                    />
+                    <span className="font-medium">
+                      المدرب - {selectedClass.trainer.user.name}
+                    </span>
+                  </div>
+
+                  <div className="bg-gray-50 p-4 rounded-xl flex justify-between items-center">
+                    <span className="text-gray-600">الحساب الالكتروني</span>
+                    <span className="font-medium">
+                      {selectedClass.trainer.user.email}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -185,6 +198,7 @@ const CustomersClassesTab = ({
   const { setSnackbarConfig } = useMokkBar();
   const [selectedClass, setSelectedClass] = useState(null);
   const { data: classesData, isLoading, isError } = useAllClasses();
+
   const { data: myClasses } = useMyClasses();
   const myClassesIds = myClasses ? myClasses.map((cls) => cls.id) : [];
 

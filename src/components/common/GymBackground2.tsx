@@ -1,7 +1,6 @@
 // components/common/GymBackground.tsx
-import { useEffect, useRef } from "react";
 import { motion, useAnimation, useInView } from "framer-motion";
-import Spline from "@splinetool/react-spline";
+import { useEffect, useRef } from "react";
 
 const FloatingEquipment = ({
   children,

@@ -44,7 +44,6 @@ const TrainerDashboard = () => {
   }, []);
 
   const handleLogout = () => {
-    // Add any additional logout logic here
     dispatch(logout());
   };
 
